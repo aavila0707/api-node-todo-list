@@ -2,7 +2,7 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 const path = require("path");
-
+const cors = require("cors");
 
 const app = express();
 
@@ -10,6 +10,23 @@ const app = express();
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 app.use(express.json());
 
+const whitelist = [
+  `http://localhost:${process.env.PORT}`,
+  `https://localhost:${process.env.PORT}`,
+  "http://alejandro-mern-todo-list.herokuapp.com",
+  "https://alejandro-mern-todo-list.herokuapp.com",
+];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 // MONGOOSE
 const db = {
